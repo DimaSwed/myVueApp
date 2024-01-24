@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="css/reset.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<title>Моя раса в Startcragt 2</title>
+	</head>
+	<body>
+		<div class="main">
+			<!-- 1 SCREEN -->
+
+			<div class="app" v-show="showMain">
+				<div class="app__header">
+					<img src="img/logo.png" class="app__logo" />
+				</div>
+				<div class="app__body">
+					<button class="app__btn" v-on:click="goToQuestions">
+						<i class="fa fa-play-circle-o" aria-hidden="true"></i>
+						<div class="app__btn-text">Начать</div>
+					</button>
+
+					<button class="app__btn" @click="goToAchievements">
+						<i class="fa fa-trophy" aria-hidden="true"></i>
+						<div class="app__btn-text">Достижения</div>
+					</button>
+
+					<button class="app__btn" @click="goToSocial">
+						<i class="fa fa-user" aria-hidden="true"></i>
+						<div class="app__btn-text">Автор</div>
+					</button>
+
+					<button class="app__btn btn__sound">
+						<i class="fa fa-volume-off" aria-hidden="true"></i>
+						<div class="app__btn-text">Звук</div>
+					</button>
+				</div>
+			</div>
+
+			<!-- 2 SCREEN -->
+
+			<div class="app achievements" v-show="showAchievements">
+				<div class="app__body">
+					<div class="app__body-inner">
+						<h2 class="app__body-title">
+							<i class="fa fa-trophy" aria-hidden="true"></i>
+							Достижения
+						</h2>
+
+						<div class="app__body-top">
+							<div class="app__card">
+								<div class="app__card-text">Счет</div>
+								<div class="app__card-count">{{ totalScore }}</div>
+							</div>
+
+							<div class="app__card">
+								<div class="app__card-text">Открыто рас</div>
+								<div class="app__card-count">{{ openRaces }}</div>
+							</div>
+
+							<div class="app__card">
+								<div class="app__card-text">Всего игр</div>
+								<div class="app__card-count">{{ totalGames }}</div>
+							</div>
+
+							<div class="app__card">
+								<div class="app__card-text">Любимая раса</div>
+								<div class="app__card-count">{{ favoriteRace }}</div>
+							</div>
+						</div>
+
+						<div class="app__body-middle">
+							<div class="app__result" v-for="(race, k) in results" v-show="showResultRace[k]" @click="goToResult(k)">
+								<div class="app__result-score">
+									<i class="fa fa-star" aria-hidden="true"></i>
+									<div class="app__result-count">{{ race.points }}</div>
+								</div>
+
+								<div class="app__result-name">{{ race.name }}</div>
+
+								<div class="app__result-amount">{{ totalGame[k] }}</div>
+							</div>
+						</div>
+
+						<div class="app__body-bottom">
+							<button class="app__btn btn__back btn_achievement" @click="goToMain">
+								<i class="fa fa-reply" aria-hidden="true"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 3 SCREEN -->
+			<div class="app" v-show="showQuestions">
+				<div class="app__header">
+					<div class="app__header-inner">
+						<div class="app__count"># {{ number+1 }}</div>
+						<div class="app__text">{{ questions[number][0] }}</div>
+					</div>
+				</div>
+
+				<div class="app__body">
+					<button class="app__btn" v-for="(answer, i) in questions[number][1]" v-on:click="nextQuestion(questions[number][2][i])">
+						<div class="app__btn-text">{{ answer }}</div>
+					</button>
+				</div>
+			</div>
+
+			<!-- 4 SCREEN -->
+			<div class="app" v-show="showSocial">
+				<div class="app__body">
+					<a target="_blank" href="https://www.instagram.com/dima.swed/" class="app__btn"
+						><i class="fa fa-instagram" aria-hidden="true"></i>
+						<div class="app__btn-text">Instagram</div>
+					</a>
+					<a target="_blank" href="https://vk.com/dimaswed" class="app__btn"
+						><i class="fa fa-vk" aria-hidden="true"></i>
+						<div class="app__btn-text">ВКонтакте</div>
+					</a>
+					<a target="_blank" href="www.youtube.com/@dimaswed1144" class="app__btn"
+						><i class="fa fa-youtube" aria-hidden="true"></i>
+						<div class="app__btn-text">YouTube</div>
+					</a>
+					<button class="app__btn btn__back" @click="goToMain">
+						<i class="fa fa-reply" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- 5 SCREEN -->
+			<div class="app results" v-bind:data-race="resultRace" v-show="showResult">
+				<div class="app__body">
+					<div class="app__results-inner">
+						<div class="results__title">{{ results[resultRace].name }}</div>
+
+						<div class="results__img">
+							<img v-bind:src="'img/'+resultRace+'_logo.png'" />
+						</div>
+
+						<div class="results__text-box">
+							<p class="results__text">{{ results[resultRace].description }}</p>
+							<p class="results__quote">{{ results[resultRace].quote1 }}</p>
+							<p class="results__quote">{{ results[resultRace].quote2 }}</p>
+							<p class="results__author">{{ results[resultRace].author }}</p>
+						</div>
+
+						<div>
+							<button v-bind:class="'app__btn btn__back btn__'+resultRace" @click="goToAchievements">
+								<i class="fa fa-reply" aria-hidden="true"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/vue.js"></script>
+		<script src="js/const.js"></script>
+
+		<script>
+			// В данном коде создается экземпляр приложения Vue.
+			// 1. Создается переменная `app`, которая ссылается на новый экземпляр Vue.
+			let app = new Vue({
+				// 2. Устанавливается el свойство экземпляра, которое указывает на селектор элемента, к которому будет привязан экземпляр Vue. В данном случае, это элемент с классом "main".
+				el: '.main',
+				// 3. Задаются данные, которые будут использоваться в приложении.
+				data: {
+					// - `showMain`, `showSocial`, `showAchievements`, `showQuestions`, `showResult` - булевые значения, определяющие отображение разных частей приложения.
+					showMain: true,
+					showSocial: false,
+					showAchievements: false,
+					showQuestions: false,
+					showResult: false,
+					// - `number` - число, используемое для отслеживания текущего шага в приложении.
+					number: 0,
+					// - `score` - объект, содержащий начальные значения счетчиков для каждой расы.
+					score: {
+						zerg: 0,
+						primal: 0,
+						protoss: 0,
+						taldarim: 0,
+						terran: 0
+					},
+					// - `totalGame` - объект, содержащий информацию о общем количестве сыгранных игр для каждой расы из localStorage или значения по умолчанию, если нет сохраненных данных.
+					totalGame: localStorage.getItem('sc2TotalGame')
+						? JSON.parse(localStorage.getItem('sc2TotalGame'))
+						: {
+								zerg: 0,
+								primal: 0,
+								protoss: 0,
+								taldarim: 0,
+								terran: 0,
+								infested: 0,
+								hybrid: 0
+						  },
+					// - `totalGames` - значение, хранящее общее количество сыгранных игр из localStorage или значение по умолчанию, если нет сохраненных данных.
+					totalGames: localStorage.getItem('sc2TotalGames') ? localStorage.getItem('sc2TotalGames') : 0,
+					// - `questions` - массив вопросов.
+					questions: questions,
+					// - `results` - массив результатов.
+					results: results,
+					// - `resultRace` - строка, содержащая имя расы результата по умолчанию.
+					resultRace: 'infested'
+				},
+				// 4. Определяются методы, которые могут быть вызваны в приложении.
+				methods: {
+					// - `goToMain()` - переключает отображение раздела "Главная страница".
+					goToMain() {
+						this.showMain = true
+						this.showSocial = false
+						this.showAchievements = false
+						this.showQuestions = false
+						this.showResult = false
+					},
+					// - `goToSocial()` - переключает отображение раздела "Социальная сеть".
+					goToSocial() {
+						this.showMain = false
+						this.showSocial = true
+						this.showAchievements = false
+						this.showQuestions = false
+						this.showResult = false
+					},
+					// - `goToAchievements()` - переключает отображение раздела "Достижения" только если общее количество сыгранных игр больше нуля, иначе переключает на раздел "Вопросы".
+					goToAchievements() {
+						if (this.totalGames > 0) {
+							this.showMain = false
+							this.showSocial = false
+							this.showAchievements = true
+							this.showQuestions = false
+							this.showResult = false
+						} else {
+							this.goToQuestions()
+						}
+					},
+					// - `goToQuestions()` - переключает отображение раздела "Вопросы" и сбрасывает значения счетчиков рас.
+					goToQuestions() {
+						this.score = {
+							zerg: 0,
+							primal: 0,
+							protoss: 0,
+							taldarim: 0,
+							terran: 0
+						}
+						this.showMain = false
+						this.showSocial = false
+						this.showAchievements = false
+						this.showQuestions = true
+						this.showResult = false
+					},
+					// - `goToResult(race)` - переключает отображение раздела "Результат" и устанавливает имя расы для результата.
+					goToResult(race) {
+						this.showMain = false
+						this.showSocial = false
+						this.showAchievements = false
+						this.showQuestions = false
+						this.showResult = true
+						this.resultRace = race
+					},
+					// - функция "nextQuestion(answer)" с одним параметром "answer".
+					nextQuestion(answer) {
+						// Проверяет, если значение переменной "number" равно 24.
+						// - Если это условие истинно, то устанавливает значение переменной "number" равным 0 и вызывает функцию "endGame()".
+						if (this.number == 24) {
+							this.number = 0
+							this.endGame()
+							// - Если это условие ложно, то увеличивает значение переменной "number" на 1.
+						} else {
+							this.number++
+						}
+						// Выполняет eval(answer), что означает выполнение кода JavaScript, представленного в параметре "answer".
+						eval(answer)
+					},
+					endGame() {
+						// Увеличивает значение переменной "totalGames" на 1 и сохраняет ее в локальном хранилище под именем "sc2TotalGames".
+						this.totalGames++
+						localStorage.setItem('sc2TotalGames', this.totalGames)
+						// Проверяются условия :
+						// Если значение переменной "score.zerg" больше значения переменных "score.protoss" и "score.terran", и значение переменной "score.primal" меньше 8, и разница между значениями переменных "score.protoss" и "score.zerg" больше 3, то вызывает функцию "goToResult('zerg')" и увеличивает значение переменной "totalGame.zerg" на 1.
+						//Зерг
+						if (this.score.zerg > this.score.protoss && this.score.zerg > this.score.terran && this.score.primal < 8 && Math.abs(this.score.protoss - this.score.zerg) > 3) {
+							this.goToResult('zerg')
+							this.totalGame.zerg++
+						}
+						// Если значение переменной "score.primal" больше значения переменных "score.protoss" и "score.terran", и значение переменной "score.primal" равно 8, то вызывает функцию "goToResult('primal')" и увеличивает значение переменной "totalGame.primal" на 1.
+						//Изначальный
+						else if (this.score.primal > this.score.protoss && this.score.primal > this.score.terran && this.score.primal == 8) {
+							this.goToResult('primal')
+							this.totalGame.primal++
+						}
+						// Если значение переменной "score.protoss" больше значения переменных "score.zerg" и "score.terran", и значение переменной "score.taldarim" меньше 5, и разница между значениями переменных "score.protoss" и "score.zerg" больше 3, то вызывает функцию "goToResult('protoss')" и увеличивает значение переменной "totalGame.protoss" на 1.
+						//Протосс
+						else if (this.score.protoss > this.score.zerg && this.score.protoss > this.score.terran && this.score.taldarim < 5 && Math.abs(this.score.protoss - this.score.zerg) > 3) {
+							this.goToResult('protoss')
+							this.totalGame.protoss++
+						}
+						// Если значение переменной "score.protoss" больше значения переменных "score.zerg" и "score.terran", и значение переменной "score.taldarim" равно 5, то вызывает функцию "goToResult('taldarim')" и увеличивает значение переменной "totalGame.taldarim" на 1.
+						//Талдарим
+						else if (this.score.protoss > this.score.zerg && this.score.protoss > this.score.terran && this.score.taldarim == 5) {
+							this.goToResult('taldarim')
+							this.totalGame.taldarim++
+						}
+						// Если значение переменной "score.terran" больше значения переменных "score.zerg" и "score.protoss", то вызывает функцию "goToResult('terran')" и увеличивает значение переменной "totalGame.terran" на 1.
+						//Тeрран
+						else if (this.score.terran > this.score.zerg && this.score.terran > this.score.protoss) {
+							this.goToResult('terran')
+							this.totalGame.terran++
+						}
+						// Если разница между значениями переменных "score.protoss" и "score.zerg" меньше или равно 3, то вызывает функцию "goToResult('hybrid')" и увеличивает значение переменной "totalGame.hybrid" на 1.
+						//Гибрид
+						else if (Math.abs(this.score.protoss - this.score.zerg) <= 3) {
+							this.goToResult('hybrid')
+							this.totalGame.hybrid++
+						}
+						// Если ни одно из предыдущих условий не выполняется, то вызывает функцию "goToResult('infested')" и увеличивает значение переменной "totalGame.infested" на 1.
+						//Зараженный терран
+						else {
+							this.goToResult('infested')
+							this.totalGame.infested++
+						}
+						// Происходит сохранение переменной this.totalGame в локальное хранилище браузера под ключом 'sc2TotalGame'.
+						// Функция localStorage.setItem() используется для сохранения данных в локальном хранилище браузера. Она принимает два аргумента: ключ и значение. В данном случае ключ - это строка 'sc2TotalGame', а значение - результат преобразования переменной this.totalGame в JSON-строку с помощью JSON.stringify().
+						// JSON-строка создается путем сериализации объекта this.totalGame в формат JSON. Это означает, что все значения и свойства объекта будут преобразованы в формат, который можно сохранить и передавать через сеть.
+						localStorage.setItem('sc2TotalGame', JSON.stringify(this.totalGame))
+					}
+				},
+				computed: {
+					// totalScore - вычисляет общее количество очков, которое равно сумме произведений количества игр каждой расы на их баллы.
+					totalScore() {
+						let score = 0
+						for (let i in this.totalGame) {
+							score += this.totalGame[i] * results[i].points
+						}
+						return score
+					},
+					// openRaces - вычисляет количество открытых рас. Оно равно количеству рас, у которых количество игр больше 0.
+					openRaces() {
+						let count = 0
+						for (let i in this.totalGame) {
+							if (this.totalGame[i] > 0) count++
+						}
+						return count
+					},
+					// favoriteRace - определяет любимую расу. Она выбирается таким образом, чтобы количество игр данной расы было максимальным.
+					favoriteRace() {
+						let max = 'zerg'
+						for (let i in this.totalGame) {
+							if (this.totalGame[i] > this.totalGame[max]) {
+								max = i
+							}
+						}
+						return results[max].name
+					},
+					// showResultRace - определяет, какие расы должны быть отображены в результатах игры. Если количество игр определенной расы больше 0, то для нее устанавливается значение true, иначе false.
+					showResultRace() {
+						return {
+							zerg: this.totalGame.zerg > 0 ? true : false,
+							primal: this.totalGame.primal > 0 ? true : false,
+							protoss: this.totalGame.protoss > 0 ? true : false,
+							taldarim: this.totalGame.taldarim > 0 ? true : false,
+							terran: this.totalGame.terran > 0 ? true : false,
+							infested: this.totalGame.infested > 0 ? true : false,
+							hybrid: this.totalGame.hybrid > 0 ? true : false
+						}
+					}
+				}
+			})
+
+			// 1. Создается новый объект Audio с параметром '../audio/soundtrack.mp3' и присваивается переменной audio.
+			let audio = new Audio('../audio/soundtrack.mp3')
+			// 2. Находится элемент с классом 'btn__sound' и присваивается переменной audio_btn.
+			let audio_btn = document.querySelector('.btn__sound')
+			// 3. Находится элемент с классом 'btn__sound i' и присваивается переменной audio_icon.
+			let audio_icon = document.querySelector('.btn__sound i')
+
+			// 4. Звук в объекте audio отключен (muted) и установлен уровень громкости (volume) на 0.3.
+			audio.muted = true
+			audio.volume = 0.3
+
+			// 5. Добавлено событие 'click' на элемент audio_btn. В функции обработчика события:
+			audio_btn.addEventListener('click', function () {
+				// - Проверяется, если звук был отключен (audio.muted равно true):
+				if (audio.muted) {
+					// - Включается звук (audio.muted устанавливается в false).
+					audio.muted = false
+					// - Устанавливается текущая позиция воспроизведения на случайное число в диапазоне от 0 до (длительность аудио + 1).
+					audio.currentTime = Math.random() * (audio.duration + 1)
+					// - Запускается воспроизведение аудио.
+					audio.play()
+					// - К элементу audio_icon добавляется класс 'fa-volume-up', а класс 'fa-volume-off' удаляется.
+					audio_icon.classList.add('fa-volume-up')
+					audio_icon.classList.remove('fa-volume-off')
+					// - Иначе:
+				} else {
+					// - Звук отключается (audio.muted устанавливается в true).
+					audio.muted = true
+					// - Воспроизведение аудио приостанавливается.
+					audio.pause()
+					// - К элементу audio_icon добавляется класс 'fa-volume-off', а класс 'fa-volume-up' удаляется.
+					audio_icon.classList.add('fa-volume-off')
+					audio_icon.classList.remove('fa-volume-up')
+				}
+			})
+		</script>
+	</body>
+</html>
